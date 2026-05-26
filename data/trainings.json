@@ -1,0 +1,18 @@
+[
+  {
+    "day_of_week": 4,
+    "time": "18:00",
+    "location": "БНТУ",
+    "poll_create_days_before": 2,
+    "reminder_days_before": 1,
+    "enabled": true
+  },
+  {
+    "day_of_week": 6,
+    "time": "10:00",
+    "location": "РГУОР",
+    "poll_create_days_before": 2,
+    "reminder_days_before": 1,
+    "enabled": true
+  }
+]

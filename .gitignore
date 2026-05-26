@@ -1,0 +1,25 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+
+# Real secrets (only .example files are committed)
+secrets/*
+!secrets/*.example
+
+# Local data cache
+data/*.json
+!data/trainings.json
+!data/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp

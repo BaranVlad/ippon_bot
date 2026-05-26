@@ -1,0 +1,8 @@
+{
+  "timezone": "Europe/Moscow",
+  "reminder_day_of_week": 0,
+  "reminder_hour": 19,
+  "reminder_minute": 0,
+  "debt_threshold": -20.0,
+  "google_sheets_debts_range": "J2:K15"
+}

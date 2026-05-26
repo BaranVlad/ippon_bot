@@ -1,0 +1,16 @@
+[Unit]
+Description=Ippon Volleyball Bot
+After=network.target
+
+[Service]
+Type=simple
+User=bladvaran
+WorkingDirectory=/home/bladvaran/projects/ippon_bot
+Environment=PYTHONPATH=/home/bladvaran/projects/ippon_bot
+EnvironmentFile=/home/bladvaran/projects/ippon_bot/.env.prod
+ExecStart=/home/bladvaran/projects/ippon_bot/.venv/bin/python -m bot
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

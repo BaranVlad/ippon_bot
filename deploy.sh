@@ -6,6 +6,8 @@ SERVICE_NAME="ippon-bot"
 
 cd "$PROJECT_DIR"
 
+git fetch
+
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "")
 

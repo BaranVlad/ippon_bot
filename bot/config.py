@@ -61,6 +61,12 @@ class Settings(BaseSettings):
     spreadsheet_url: str = ""
 
     # ------------------------------------------------------------------
+    # GitHub integration
+    # ------------------------------------------------------------------
+    github_token: str = ""
+    github_repo: str = ""
+
+    # ------------------------------------------------------------------
     # Group settings
     # ------------------------------------------------------------------
     group_chat_id: int = 0
@@ -97,6 +103,8 @@ class Settings(BaseSettings):
             "google_sheets_spreadsheet_key": self.google_sheets_spreadsheet_key,
             "polls_spreadsheet_key": self.polls_spreadsheet_key,
             "spreadsheet_url": self.spreadsheet_url,
+            "github_token": self.github_token,
+            "github_repo": self.github_repo,
             "admins": self.admins,
         }
         for name, value in optional_fields.items():

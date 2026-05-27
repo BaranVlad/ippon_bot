@@ -7,6 +7,7 @@ from bot.config import settings
 from bot.data_loaders.members import get_member_name_by_id
 from bot.data_loaders.payment import get_payment_methods, get_payment_contact
 from bot.integrations.gsheets.debts import get_member_balance
+from bot.services.feature_request import create_feature_issue
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -125,3 +126,34 @@ async def cmd_links(message: types.Message) -> None:
         text += "📊 Таблица с расчётами пока не настроена\n"
 
     await message.answer(text)
+
+
+@router.message(Command("feature"))
+async def cmd_feature(message: types.Message) -> None:
+    user = message.from_user
+    if not user:
+        return
+
+    # Extract text after command (handle both /feature and /feature@bot_name)
+    text = message.text or ""
+    command_prefix = "/feature"
+    if user.username and f"@{user.username}" in text:
+        text = text.split("@")[0] + text.split("@", 1)[1].split(" ", 1)[1] if " " in text else ""
+    text = text.replace(command_prefix, "", 1).strip()
+
+    if not text:
+        await message.answer(
+            "📝 Опиши фичу после команды.\n"
+            "Пример: <code>/feature Добавить напоминания о сборах</code>"
+        )
+        return
+
+    try:
+        issue_url = await create_feature_issue(text)
+        await message.answer(f"✅ Запрос на фичу создан:\n{issue_url}")
+    except RuntimeError as e:
+        logger.warning(f"Feature request failed for user {user.id}: {e}")
+        await message.answer("⚙️ Функция предложения фичей пока не настроена.")
+    except Exception as e:
+        logger.exception(f"Failed to create feature issue for user {user.id}: {e}")
+        await message.answer("❌ Не удалось создать запрос. Попробуй позже.")

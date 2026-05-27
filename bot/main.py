@@ -25,6 +25,7 @@ async def setup_bot_commands(bot: Bot) -> None:
         BotCommand(command="start", description="Приветствие"),
         BotCommand(command="help", description="Показать справку"),
         BotCommand(command="status", description="Показать свой баланс"),
+        BotCommand(command="feature", description="Предложить фичу"),
     ]
     
     # Common commands for everyone

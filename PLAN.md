@@ -69,8 +69,8 @@ feature/xxx   → отдельные задачи
 
 **Реализация:**
 - Один кодовый репозиторий.
-- Разные `.env` файлы: `.env.prod` и `.env.dev`.
-- Запуск через `python -m bot` с указанием конфига (`--env-file .env.dev`).
+- Разные `SENSITIVE_DIR` для prod и dev (например, `~/secrets/ippon-bot/prod` и `~/secrets/ippon-bot/dev`).
+- Запуск через `python -m bot` с нужным корневым `.env` (перед запуском экспортировать `SENSITIVE_DIR`).
 - На ноутбуке крутится только `prod`. `dev` запускается локально на машине разработчика.
 
 ---
@@ -96,7 +96,7 @@ ippon_bot/
 │   ├── __init__.py
 │   ├── __main__.py              # Точка входа: python -m bot
 │   ├── config.py                # Pydantic-settings, валидация env-переменных
-│   ├── data.py                  # Загрузка data/members.json
+│   ├── data.py                  # Загрузка members.json (из sensitive_dir)
 │   ├── main.py                  # Инициализация диспетчера, подключение роутеров, polling
 │   │
 │   ├── handlers/
@@ -131,8 +131,6 @@ ippon_bot/
 │   └── debt_group.txt           # Шаблон группового напоминания
 │
 ├── .env.example                 # Шаблон переменных окружения
-├── .env.prod                    # Продакшен конфиг (в .gitignore)
-├── .env.dev                     # Дев конфиг (в .gitignore)
 ├── requirements.txt             # или pyproject.toml
 ├── deploy.sh                    # Скрипт обновления на ноутбуке
 ├── ippon-bot.service            # Systemd unit-файл
@@ -183,7 +181,7 @@ APScheduler (за 1 день до тренировки)
 | Долги, оплаты | Лист «Долги» (J2:K15): имя, баланс |
 | Опросы | Лист «Опросы»: poll_id, message_id, date, time, location, thread_id, status |
 | Голоса | Лист «Голоса»: poll_id, имя, выбор, время голосования |
-| Список участников | `data/members.json`: имя → user_id |
+| Список участников | `members.json` (в `sensitive_dir`): имя → user_id |
 | Расписание тренировок | `data/trainings.json` |
 | Шаблоны сообщений | `templates/*.txt` |
 
@@ -195,7 +193,7 @@ APScheduler (за 1 день до тренировки)
 - [x] Создать dev- и prod-бота в @BotFather
 - [x] Подготовить Google Cloud Project + Service Account для Sheets API
 - [x] Создать структуру таблицы (лист «Долги»: name | balance)
-- [x] Заполнить `data/members.json`
+- [x] Заполнить `members.json` (в `sensitive_dir`)
 
 ### ✅ Этап 1: Напоминания о долгах
 - [x] Чтение долгов из J2:K15
@@ -212,11 +210,11 @@ APScheduler (за 1 день до тренировки)
 - [x] Обработка `PollAnswer` → лист «Голоса»
 - [x] Напоминание не проголосовавшим
 
-### Этап 3: Хостинг и польиш
-- [ ] Systemd unit
-- [ ] Logrotate
-- [ ] deploy.sh
-- [ ] Тестовый запуск на ноутбуке
+### ✅ Этап 3: Хостинг и польиш
+- [x] Systemd unit
+- [x] deploy.sh
+- [x] Тестовый запуск на ноутбуке
+- [ ] Logrotate (опционально — journald ротирует логи самостоятельно)
 
 ---
 

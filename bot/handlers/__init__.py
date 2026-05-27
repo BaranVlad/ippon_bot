@@ -1,3 +1,3 @@
-from bot.handlers import commands, polls
+from bot.handlers import common, admin, callbacks, polls
 
-__all__ = ["commands", "polls"]
+__all__ = ["common", "admin", "callbacks", "polls"]

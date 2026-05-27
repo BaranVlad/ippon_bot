@@ -3,10 +3,10 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message, CallbackQuery
 
-from bot.data import is_member
+from bot.data_loaders.members import is_member
 
 
-class MemberFilterMiddleware(BaseMiddleware):
+class MembershipMiddleware(BaseMiddleware):
     """Silently ignore messages and callbacks from users not in members.json."""
 
     async def __call__(

@@ -4,5 +4,7 @@
   "reminder_hour": 19,
   "reminder_minute": 0,
   "debt_threshold": -20.0,
-  "google_sheets_debts_range": "J2:K15"
+  "google_sheets_debts_range": "J2:K15",
+  "training_check_hour": 10,
+  "training_check_minute": 0
 }

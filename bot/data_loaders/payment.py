@@ -1,16 +1,17 @@
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from bot.config import settings
+from bot.models import PaymentConfig, PaymentMethod
 
 logger = logging.getLogger(__name__)
 
-_payment_cache: Dict[str, Any] | None = None
+_payment_cache: Optional[PaymentConfig] = None
 
 
-def load_payment_config() -> Dict[str, Any]:
+def load_payment_config() -> PaymentConfig:
     """Load payment info from sensitive_dir/payment.json (cached)."""
     global _payment_cache
     if _payment_cache is not None:
@@ -22,25 +23,24 @@ def load_payment_config() -> Dict[str, Any]:
             f"payment.json не найден: {path}\n"
             f"Скопируйте secrets/payment.json.example → {path} и заполните"
         )
-        return {}
+        _payment_cache = PaymentConfig()
+        return _payment_cache
 
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    _payment_cache = data
+    _payment_cache = PaymentConfig.model_validate(data)
     logger.info(f"Loaded payment config from {path}")
-    return data
+    return _payment_cache
 
 
-def get_payment_methods() -> List[Dict[str, str]]:
+def get_payment_methods() -> list[PaymentMethod]:
     """Return list of payment methods."""
     config = load_payment_config()
-    return config.get("methods", [])
+    return config.methods
 
 
-def get_payment_contact() -> tuple[int | None, str]:
+def get_payment_contact() -> tuple[Optional[int], str]:
     """Return (user_id, name) of the person responsible for payments."""
     config = load_payment_config()
-    user_id = config.get("contact_user_id")
-    name = config.get("contact_name", "капитан")
-    return (user_id, name)
+    return config.contact_user_id, config.contact_name

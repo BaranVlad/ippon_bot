@@ -1,11 +1,12 @@
 import logging
+
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
 
 from bot.config import settings
-from bot.data import load_members
-from bot.services.google_sheets import get_debtors
-from bot.services.template import render_template
+from bot.data_loaders.members import load_members
+from bot.data_loaders.templates import render_template
+from bot.integrations.gsheets.debts import get_debtors
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +33,14 @@ async def send_debt_reminders(bot: Bot) -> None:
     spreadsheet_link = _spreadsheet_link()
 
     for debtor in debtors:
-        name = debtor["name"]
-        balance = debtor["balance"]
+        name = debtor.name
+        balance = debtor.balance
         user_id = members.get(name)
 
         if user_id:
             try:
                 text = render_template(
-                    "debt_dm",
+                    "debt_private",
                     name=name,
                     balance=f"{balance:.2f}",
                     spreadsheet_link=spreadsheet_link,
@@ -56,7 +57,7 @@ async def send_debt_reminders(bot: Bot) -> None:
 
     if group_debtors:
         debtor_lines = [
-            f"{i}. {d['name']}: {d['balance']:.2f} BYN"
+            f"{i}. {d.name}: {d.balance:.2f} BYN"
             for i, d in enumerate(group_debtors, 1)
         ]
 

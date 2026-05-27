@@ -5,10 +5,10 @@ After=network.target
 [Service]
 Type=simple
 User=bladvaran
-WorkingDirectory=%h/projects/ippon_bot
-Environment=PYTHONPATH=%h/projects/ippon_bot
-EnvironmentFile=%h/projects/ippon_bot/.env
-ExecStart=%h/projects/ippon_bot/.venv/bin/python -m bot
+WorkingDirectory=/home/bladvaran/projects/ippon_bot
+Environment=PYTHONPATH=/home/bladvaran/projects/ippon_bot
+EnvironmentFile=/home/bladvaran/projects/ippon_bot/.env
+ExecStart=/home/bladvaran/projects/ippon_bot/.venv/bin/python -m bot
 Restart=always
 RestartSec=10
 

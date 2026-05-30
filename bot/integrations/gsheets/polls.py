@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import List, Optional
 
@@ -7,8 +8,7 @@ from bot.models import PollRecord
 logger = logging.getLogger(__name__)
 
 
-def get_all_poll_dates() -> set[str]:
-    """Return a set of all training dates that already have a poll."""
+def _get_all_poll_dates_sync() -> set[str]:
     sheet = get_polls_sheet()
     values = sheet.get_all_values()
     if len(values) < 2:
@@ -19,8 +19,11 @@ def get_all_poll_dates() -> set[str]:
     return {row[date_idx].strip() for row in values[1:] if len(row) > date_idx}
 
 
-def get_poll_by_date(training_date: str) -> Optional[PollRecord]:
-    """Check if a poll already exists for a given training date."""
+async def get_all_poll_dates() -> set[str]:
+    return await asyncio.to_thread(_get_all_poll_dates_sync)
+
+
+def _get_poll_by_date_sync(training_date: str) -> Optional[PollRecord]:
     sheet = get_polls_sheet()
     values = sheet.get_all_values()
     if len(values) < 2:
@@ -35,7 +38,11 @@ def get_poll_by_date(training_date: str) -> Optional[PollRecord]:
     return None
 
 
-def save_poll(
+async def get_poll_by_date(training_date: str) -> Optional[PollRecord]:
+    return await asyncio.to_thread(_get_poll_by_date_sync, training_date)
+
+
+def _save_poll_sync(
     poll_id: str,
     message_id: int,
     date: str,
@@ -44,7 +51,6 @@ def save_poll(
     thread_id: Optional[int],
     status: str = "active",
 ) -> None:
-    """Append a new poll record to the 'Опросы' sheet."""
     sheet = get_polls_sheet()
     sheet.append_row([
         poll_id,
@@ -58,8 +64,21 @@ def save_poll(
     logger.info(f"Saved poll {poll_id} for {date} {time}")
 
 
-def get_active_polls() -> List[PollRecord]:
-    """Return all polls with status='active'."""
+async def save_poll(
+    poll_id: str,
+    message_id: int,
+    date: str,
+    time: str,
+    location: str,
+    thread_id: Optional[int],
+    status: str = "active",
+) -> None:
+    return await asyncio.to_thread(
+        _save_poll_sync, poll_id, message_id, date, time, location, thread_id, status
+    )
+
+
+def _get_active_polls_sync() -> List[PollRecord]:
     sheet = get_polls_sheet()
     values = sheet.get_all_values()
 
@@ -74,6 +93,10 @@ def get_active_polls() -> List[PollRecord]:
             active.append(_row_to_poll_record(record))
 
     return active
+
+
+async def get_active_polls() -> List[PollRecord]:
+    return await asyncio.to_thread(_get_active_polls_sync)
 
 
 def _row_to_poll_record(record: dict) -> PollRecord:

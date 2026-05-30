@@ -76,7 +76,8 @@ async def on_create_poll(
         return
 
     # Check again if poll exists
-    if date_str in get_all_poll_dates():
+    poll_dates = await get_all_poll_dates()
+    if date_str in poll_dates:
         await callback.answer("Опрос для этой тренировки уже создан!", show_alert=True)
         return
 

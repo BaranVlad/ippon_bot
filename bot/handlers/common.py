@@ -64,7 +64,7 @@ async def cmd_status(message: types.Message) -> None:
         )
         return
 
-    balance = get_member_balance(name)
+    balance = await get_member_balance(name)
     if balance is None:
         await message.answer("Не удалось получить баланс из таблицы. Попробуй позже.")
         return

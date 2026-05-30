@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime
 from typing import Dict
@@ -7,7 +8,7 @@ from bot.integrations.gsheets.client import get_votes_sheet
 logger = logging.getLogger(__name__)
 
 
-def save_vote(poll_id: str, name: str, vote: str) -> None:
+def _save_vote_sync(poll_id: str, name: str, vote: str) -> None:
     """Append or update a vote in the 'Голоса' sheet."""
     sheet = get_votes_sheet()
     values = sheet.get_all_values()
@@ -37,7 +38,11 @@ def save_vote(poll_id: str, name: str, vote: str) -> None:
     logger.info(f"Saved vote for {name} in poll {poll_id}: {vote}")
 
 
-def get_votes_by_poll(poll_id: str) -> Dict[str, str]:
+async def save_vote(poll_id: str, name: str, vote: str) -> None:
+    return await asyncio.to_thread(_save_vote_sync, poll_id, name, vote)
+
+
+def _get_votes_by_poll_sync(poll_id: str) -> Dict[str, str]:
     """Return a dict {name: vote} for a given poll."""
     sheet = get_votes_sheet()
     values = sheet.get_all_values()
@@ -56,3 +61,7 @@ def get_votes_by_poll(poll_id: str) -> Dict[str, str]:
                 votes[name] = vote
 
     return votes
+
+
+async def get_votes_by_poll(poll_id: str) -> Dict[str, str]:
+    return await asyncio.to_thread(_get_votes_by_poll_sync, poll_id)

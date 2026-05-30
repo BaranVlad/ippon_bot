@@ -20,7 +20,7 @@ def _spreadsheet_link() -> str:
 
 async def send_debt_reminders(bot: Bot) -> None:
     """Send DM to known users, group message for the rest."""
-    debtors = get_debtors()
+    debtors = await get_debtors()
 
     if not debtors:
         logger.info("No debtors found, skipping reminders")

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import List, Optional
 
@@ -16,7 +17,7 @@ def _read_debts_range() -> List[List[str]]:
     return values
 
 
-def get_debtors() -> List[Debtor]:
+def _get_debtors_sync() -> List[Debtor]:
     """Return members whose balance is below the threshold."""
     rows = _read_debts_range()
     debtors = []
@@ -42,7 +43,12 @@ def get_debtors() -> List[Debtor]:
     return debtors
 
 
-def get_member_balance(name: str) -> Optional[float]:
+async def get_debtors() -> List[Debtor]:
+    """Async wrapper for _get_debtors_sync to avoid blocking the event loop."""
+    return await asyncio.to_thread(_get_debtors_sync)
+
+
+def _get_member_balance_sync(name: str) -> Optional[float]:
     """Get balance for a specific member by name."""
     rows = _read_debts_range()
 
@@ -57,3 +63,8 @@ def get_member_balance(name: str) -> Optional[float]:
                 return None
 
     return None
+
+
+async def get_member_balance(name: str) -> Optional[float]:
+    """Async wrapper for _get_member_balance_sync."""
+    return await asyncio.to_thread(_get_member_balance_sync, name)

@@ -42,7 +42,7 @@ async def cmd_remind_training(message: types.Message) -> None:
         await message.answer("⛔ Эта команда только для администраторов.")
         return
 
-    polls = get_active_polls()
+    polls = await get_active_polls()
     if not polls:
         await message.answer("Нет активных опросов.")
         return
@@ -73,7 +73,7 @@ async def cmd_new_training(message: types.Message) -> None:
         await message.answer("Нет предстоящих тренировок в расписании.")
         return
 
-    existing_dates = get_all_poll_dates()
+    existing_dates = await get_all_poll_dates()
     new_trainings = [t for t in upcoming if t["date_str"] not in existing_dates]
 
     if not new_trainings:

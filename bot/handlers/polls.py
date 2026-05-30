@@ -25,11 +25,11 @@ async def handle_poll_answer(poll_answer: PollAnswer) -> None:
 
     if not option_ids:
         # User retracted their vote
-        save_vote(poll_id, name, "Отменил")
+        await save_vote(poll_id, name, "Отменил")
         logger.info(f"Vote retracted: {name} (poll={poll_id})")
         return
 
     vote = POLL_OPTIONS[option_ids[0]] if option_ids[0] < len(POLL_OPTIONS) else "Не знаю"
 
-    save_vote(poll_id, name, vote)
+    await save_vote(poll_id, name, vote)
     logger.info(f"Vote recorded: {name} -> {vote} (poll={poll_id})")

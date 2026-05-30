@@ -34,7 +34,7 @@ async def create_training_poll(bot: Bot, time: str, location: str, training_date
     question = f"Тренировка {weekday} {date_str} {time}, {location}"
 
     # Check if poll already exists
-    existing = get_poll_by_date(date_str)
+    existing = await get_poll_by_date(date_str)
     if existing:
         logger.info(f"Poll for {date_str} already exists (poll_id={existing.poll_id})")
         return
@@ -54,7 +54,7 @@ async def create_training_poll(bot: Bot, time: str, location: str, training_date
 
         msg = await bot.send_poll(**kwargs)
 
-        save_poll(
+        await save_poll(
             poll_id=msg.poll.id,
             message_id=msg.message_id,
             date=date_str,
@@ -88,7 +88,7 @@ async def send_poll_reminders(bot: Bot, poll: PollRecord) -> None:
     time = poll.time
     location = poll.location
 
-    votes = get_votes_by_poll(poll_id)
+    votes = await get_votes_by_poll(poll_id)
     members = load_members()
 
     dm_sent = 0

@@ -45,6 +45,7 @@ async def cmd_help(message: types.Message) -> None:
             "/remind_debts — Отправить напоминание о долгах\n"
             "/remind_training — Напомнить не проголосовавшим\n"
             "/new_training — Создать опрос для тренировки\n"
+            "/all — Тегнуть всех\n"
         )
 
     text += "\nНапоминания о долгах приходят каждое воскресенье в 19:00."

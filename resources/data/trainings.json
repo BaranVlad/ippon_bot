@@ -5,7 +5,7 @@
     "location": "БНТУ",
     "poll_create_days_before": 2,
     "reminder_days_before": 1,
-    "enabled": true
+    "enabled": false
   },
   {
     "day_of_week": 6,
@@ -13,6 +13,6 @@
     "location": "РГУОР",
     "poll_create_days_before": 2,
     "reminder_days_before": 1,
-    "enabled": true
+    "enabled": false
   }
 ]

@@ -30,3 +30,27 @@ def test_generate_upcoming_trainings_sorted():
     assert len(trainings) > 0
     dates = [t["date"] for t in trainings]
     assert dates == sorted(dates)
+
+
+def test_load_trainings_includes_disabled_when_requested(monkeypatch):
+    from bot.data_loaders import trainings as trainings_loader
+    from bot.models import Training
+
+    dummy_trainings = [
+        {"day_of_week": 4, "time": "18:00", "location": "БНТУ", "poll_create_days_before": 2, "reminder_days_before": 1, "enabled": True},
+        {"day_of_week": 6, "time": "10:00", "location": "РГУОР", "poll_create_days_before": 2, "reminder_days_before": 1, "enabled": False},
+    ]
+    monkeypatch.setattr(trainings_loader, "TRAININGS_PATH", type("P", (), {"exists": lambda self: True, "open": lambda self, *a, **kw: (__import__("io").StringIO(__import__("json").dumps(dummy_trainings)))()})())
+
+    # Mock the file reading properly
+    import json
+    from unittest.mock import mock_open, patch
+    from pathlib import Path
+
+    with patch("builtins.open", mock_open(read_data=json.dumps(dummy_trainings))):
+        enabled_only = load_trainings(only_enabled=True)
+        all_trainings = load_trainings(only_enabled=False)
+
+    assert len(enabled_only) == 1
+    assert len(all_trainings) == 2
+    assert all_trainings[1].enabled is False

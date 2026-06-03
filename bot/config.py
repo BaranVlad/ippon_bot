@@ -71,6 +71,7 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     group_chat_id: int = 0
     polls_message_thread_id: Optional[int] = None
+    debts_message_thread_id: Optional[int] = None
     admins: str = ""
 
     # ------------------------------------------------------------------
@@ -84,6 +85,9 @@ class Settings(BaseSettings):
     google_sheets_debts_range: str = "J2:K15"
     training_check_hour: int = 10
     training_check_minute: int = 0
+    group_only_mode: bool = False
+    training_feedback_form_url: str = ""
+    training_suggestion_form_url: str = ""
 
     # ------------------------------------------------------------------
     # Helpers

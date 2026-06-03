@@ -16,3 +16,10 @@ def test_is_member_with_empty_cache(monkeypatch):
     """When no members.json exists, everyone is allowed."""
     monkeypatch.setattr(members_loader, "_members_cache", {})
     assert is_member(999) is True
+
+
+def test_get_all_member_ids(monkeypatch):
+    monkeypatch.setattr(members_loader, "_members_cache", {"Иван": 123, "Петр": 456})
+    from bot.data_loaders.members import get_all_member_ids
+    ids = get_all_member_ids()
+    assert sorted(ids) == [123, 456]

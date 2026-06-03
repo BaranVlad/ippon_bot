@@ -81,7 +81,10 @@ async def remind_non_voters(bot: Bot, training_date: str) -> None:
 
 
 async def send_poll_reminders(bot: Bot, poll: PollRecord) -> None:
-    """Send DM with forwarded poll to known users, group reply for the rest."""
+    """Send DM with forwarded poll to known users, group reply for the rest.
+
+    If group_only_mode is enabled, sends everything to the group chat.
+    """
     poll_id = poll.poll_id
     message_id = poll.message_id
     date_str = poll.date
@@ -94,33 +97,39 @@ async def send_poll_reminders(bot: Bot, poll: PollRecord) -> None:
     dm_sent = 0
     group_non_voters = []
 
-    for name in members.keys():
-        if name in votes and votes[name] != "Отменил":
-            continue
-
-        user_id = members.get(name)
-        if user_id:
-            try:
-                # Forward poll to DM
-                await bot.forward_message(
-                    chat_id=user_id,
-                    from_chat_id=settings.group_chat_id,
-                    message_id=message_id,
-                )
-                # Send reminder text
-                text = (
-                    f"Привет! Не забудь проголосовать за тренировку "
-                    f"{date_str} {time}, {location}!"
-                )
-                await bot.send_message(chat_id=user_id, text=text)
-                dm_sent += 1
+    if settings.group_only_mode:
+        # Skip DMs entirely; mention everyone who hasn't voted
+        for name in members.keys():
+            if name not in votes or votes[name] == "Отменил":
+                group_non_voters.append(name)
+    else:
+        for name in members.keys():
+            if name in votes and votes[name] != "Отменил":
                 continue
-            except TelegramForbiddenError:
-                logger.info(f"Cannot DM {name} (user_id={user_id})")
-            except Exception as e:
-                logger.warning(f"Failed to DM {name}: {e}")
 
-        group_non_voters.append(name)
+            user_id = members.get(name)
+            if user_id:
+                try:
+                    # Forward poll to DM
+                    await bot.forward_message(
+                        chat_id=user_id,
+                        from_chat_id=settings.group_chat_id,
+                        message_id=message_id,
+                    )
+                    # Send reminder text
+                    text = (
+                        f"Привет! Не забудь проголосовать за тренировку "
+                        f"{date_str} {time}, {location}!"
+                    )
+                    await bot.send_message(chat_id=user_id, text=text)
+                    dm_sent += 1
+                    continue
+                except TelegramForbiddenError:
+                    logger.info(f"Cannot DM {name} (user_id={user_id})")
+                except Exception as e:
+                    logger.warning(f"Failed to DM {name}: {e}")
+
+            group_non_voters.append(name)
 
     if group_non_voters:
         mentions = []

@@ -36,6 +36,7 @@ async def cmd_help(message: types.Message) -> None:
         "/status — Показать свой текущий баланс\n"
         "/payment — Реквизиты для оплаты\n"
         "/links — Полезные ссылки\n"
+        "/feature - Предложить фичу\n"
     )
 
     if is_admin_user:
@@ -44,6 +45,7 @@ async def cmd_help(message: types.Message) -> None:
             "/remind_debts — Отправить напоминание о долгах\n"
             "/remind_training — Напомнить не проголосовавшим\n"
             "/new_training — Создать опрос для тренировки\n"
+            "/all — Тегнуть всех\n"
         )
 
     text += "\nНапоминания о долгах приходят каждое воскресенье в 19:00."
@@ -124,6 +126,12 @@ async def cmd_links(message: types.Message) -> None:
         text += f'📊 <a href="{settings.spreadsheet_url}">Таблица с расчётами и балансом</a>\n'
     else:
         text += "📊 Таблица с расчётами пока не настроена\n"
+
+    if settings.training_feedback_form_url:
+        text += f'📝 <a href="{settings.training_feedback_form_url}">Отзыв на тренировку</a>\n'
+
+    if settings.training_suggestion_form_url:
+        text += f'💡 <a href="{settings.training_suggestion_form_url}">Предложения к тренировке</a>\n'
 
     await message.answer(text)
 

@@ -55,3 +55,9 @@ def get_member_name_by_id(user_id: int) -> Optional[str]:
         if uid == user_id:
             return name
     return None
+
+
+def get_all_member_ids() -> list[int]:
+    """Return all Telegram user_ids from members.json."""
+    members = load_members()
+    return list(members.values())

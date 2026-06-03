@@ -39,6 +39,7 @@ async def setup_bot_commands(bot: Bot) -> None:
             BotCommand(command="remind_debts", description="Напомнить о долгах"),
             BotCommand(command="remind_training", description="Напомнить не проголосовавшим"),
             BotCommand(command="new_training", description="Создать опрос для тренировки"),
+            BotCommand(command="all", description="Упомянуть всех участников"),
         ]
         try:
             await bot.set_my_commands(

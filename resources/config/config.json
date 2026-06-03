@@ -4,7 +4,10 @@
   "reminder_hour": 19,
   "reminder_minute": 0,
   "debt_threshold": -20.0,
-  "google_sheets_debts_range": "J2:K15",
+  "google_sheets_debts_range": "A2:B15",
   "training_check_hour": 10,
-  "training_check_minute": 0
+  "training_check_minute": 0,
+  "group_only_mode": true,
+  "training_feedback_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScbIF1td62tI4xF_s1m7_Vo9ZwtnKhHmsRmoBdUXoIrhD8OVw/viewform?usp=dialog",
+  "training_suggestion_form_url": "https://docs.google.com/forms/d/e/1FAIpQLScmzM04a-JUttm8RABGjC7bUY50UkQu7xpsPyYc-FjqCXsqnQ/viewform?usp=dialog"
 }

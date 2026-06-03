@@ -19,7 +19,10 @@ def _spreadsheet_link() -> str:
 
 
 async def send_debt_reminders(bot: Bot) -> None:
-    """Send DM to known users, group message for the rest."""
+    """Send DM to known users, group message for the rest.
+
+    If group_only_mode is enabled, sends everything to the group chat.
+    """
     debtors = await get_debtors()
 
     if not debtors:
@@ -32,28 +35,32 @@ async def send_debt_reminders(bot: Bot) -> None:
 
     spreadsheet_link = _spreadsheet_link()
 
-    for debtor in debtors:
-        name = debtor.name
-        balance = debtor.balance
-        user_id = members.get(name)
+    if settings.group_only_mode:
+        # Skip DMs entirely; send one group message with all debtors
+        group_debtors = debtors
+    else:
+        for debtor in debtors:
+            name = debtor.name
+            balance = debtor.balance
+            user_id = members.get(name)
 
-        if user_id:
-            try:
-                text = render_template(
-                    "debt_private",
-                    name=name,
-                    balance=f"{balance:.2f}",
-                    spreadsheet_link=spreadsheet_link,
-                )
-                await bot.send_message(chat_id=user_id, text=text)
-                dm_sent += 1
-                continue
-            except TelegramForbiddenError:
-                logger.info(f"Cannot DM {name} (user_id={user_id}), will mention in group")
-            except Exception as e:
-                logger.warning(f"Failed to DM {name}: {e}")
+            if user_id:
+                try:
+                    text = render_template(
+                        "debt_private",
+                        name=name,
+                        balance=f"{balance:.2f}",
+                        spreadsheet_link=spreadsheet_link,
+                    )
+                    await bot.send_message(chat_id=user_id, text=text)
+                    dm_sent += 1
+                    continue
+                except TelegramForbiddenError:
+                    logger.info(f"Cannot DM {name} (user_id={user_id}), will mention in group")
+                except Exception as e:
+                    logger.warning(f"Failed to DM {name}: {e}")
 
-        group_debtors.append(debtor)
+            group_debtors.append(debtor)
 
     if group_debtors:
         debtor_lines = [
@@ -71,10 +78,14 @@ async def send_debt_reminders(bot: Bot) -> None:
         )
 
         try:
-            await bot.send_message(
-                chat_id=settings.group_chat_id,
-                text=text,
-            )
+            kwargs = {
+                "chat_id": settings.group_chat_id,
+                "text": text,
+            }
+            if settings.debts_message_thread_id:
+                kwargs["message_thread_id"] = settings.debts_message_thread_id
+
+            await bot.send_message(**kwargs)
             logger.info(
                 f"Group reminder sent: {len(group_debtors)} in group, {dm_sent} in DM"
             )

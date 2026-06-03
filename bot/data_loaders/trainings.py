@@ -13,8 +13,12 @@ TRAININGS_PATH = Path(__file__).parent.parent.parent / "resources" / "data" / "t
 WEEKDAY_SHORT = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"]
 
 
-def load_trainings() -> List[Training]:
-    """Load training schedule from resources/data/trainings.json."""
+def load_trainings(only_enabled: bool = True) -> List[Training]:
+    """Load training schedule from resources/data/trainings.json.
+
+    Args:
+        only_enabled: If True, filter out trainings with enabled=false.
+    """
     if not TRAININGS_PATH.exists():
         logger.warning(f"trainings.json not found at {TRAININGS_PATH}")
         return []
@@ -22,8 +26,11 @@ def load_trainings() -> List[Training]:
     with open(TRAININGS_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    trainings = [Training.model_validate(t) for t in data if t.get("enabled", True)]
-    logger.info(f"Loaded {len(trainings)} enabled training schedules")
+    if only_enabled:
+        trainings = [Training.model_validate(t) for t in data if t.get("enabled", True)]
+    else:
+        trainings = [Training.model_validate(t) for t in data]
+    logger.info(f"Loaded {len(trainings)} training schedules (only_enabled={only_enabled})")
     return trainings
 
 
@@ -39,12 +46,14 @@ def get_next_training_date(day_of_week: int, from_date: date | None = None) -> d
     return from_date + timedelta(days=days_ahead)
 
 
-def generate_upcoming_trainings(days: int = 14, from_date: date | None = None) -> List[Dict[str, Any]]:
+def generate_upcoming_trainings(
+    days: int = 14, from_date: date | None = None, only_enabled: bool = True
+) -> List[Dict[str, Any]]:
     """Generate list of upcoming trainings with dates for the next N days."""
     if from_date is None:
         from_date = date.today()
 
-    trainings = load_trainings()
+    trainings = load_trainings(only_enabled=only_enabled)
     result = []
 
     for training in trainings:

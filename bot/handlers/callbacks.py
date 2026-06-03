@@ -31,7 +31,7 @@ async def on_remind_poll(
     await callback.answer("⏳ Отправляю напоминания...")
 
     # Find poll by id
-    polls = get_active_polls()
+    polls = await get_active_polls()
     poll = None
     for p in polls:
         if p.poll_id == callback_data.poll_id:

@@ -15,16 +15,25 @@ from bot.models import PollRecord
 logger = logging.getLogger(__name__)
 
 
-async def _get_username(bot: Bot, user_id: int) -> str | None:
-    """Try to get user's @username. Falls back to first_name if no username."""
+async def get_player_mention(bot: Bot, name: str) -> str:
+    """Return a Telegram mention for a player by their local name.
+
+    If the player's Telegram username is known, returns ``@username``;
+    otherwise returns the original name.
+    """
+    members = load_members()
+    user_id = members.get(name)
+    if not user_id:
+        return name
+
     try:
         chat = await bot.get_chat(user_id)
         if chat.username:
             return f"@{chat.username}"
-        return chat.first_name or str(user_id)
     except Exception:
-        logger.warning(f"Could not get chat info for user_id={user_id}")
-        return None
+        logger.warning(f"Could not get chat info for {name} (user_id={user_id})")
+
+    return name
 
 
 async def create_training_poll(bot: Bot, time: str, location: str, training_date: date) -> None:
@@ -132,18 +141,7 @@ async def send_poll_reminders(bot: Bot, poll: PollRecord) -> None:
             group_non_voters.append(name)
 
     if group_non_voters:
-        mentions = []
-        for name in group_non_voters:
-            user_id = members.get(name)
-            if user_id:
-                try:
-                    chat = await bot.get_chat(user_id)
-                    if chat.username:
-                        mentions.append(f"@{chat.username}")
-                        continue
-                except Exception:
-                    pass
-            mentions.append(name)
+        mentions = [await get_player_mention(bot, name) for name in group_non_voters]
 
         text = (
             f"📢 Напоминание проголосовать за тренировку "

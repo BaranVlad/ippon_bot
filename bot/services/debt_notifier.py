@@ -7,6 +7,7 @@ from bot.config import settings
 from bot.data_loaders.members import load_members
 from bot.data_loaders.templates import render_template
 from bot.integrations.gsheets.debts import get_debtors
+from bot.services.poll_manager import get_player_mention
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ async def send_debt_reminders(bot: Bot) -> None:
 
     if group_debtors:
         debtor_lines = [
-            f"{i}. {d.name}: {d.balance:.2f} BYN"
+            f"{i}. {await get_player_mention(bot, d.name)}: {d.balance:.2f} BYN"
             for i, d in enumerate(group_debtors, 1)
         ]
 
